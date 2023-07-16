@@ -30,7 +30,6 @@
 
 void usage(void);
 
-
 /* MAIN PROGRAM. */
 
 int main
@@ -82,22 +81,24 @@ int main
   }
 
   /* Read parity check file */
+  //read_pchk(pchk_file);
 
-  read_pchk(pchk_file);
+  // M = 70 (number of parity check bits, equal to N - K), N = 192 (codeword length)
 
-  if (N<=M)
-  { fprintf(stderr,
- "Can't encode if number of bits (%d) not greater than number of checks (%d)\n",
-      N,M);
-    exit(1);
-  }
+//  if (N<=M)
+//  { fprintf(stderr,
+// "Can't encode if number of bits (%d) not greater than number of checks (%d)\n",
+//      N,M);
+//    exit(1);
+//  }
 
   /* Read generator matrix file. */
 
-  read_gen(gen_file,0,0);
+  read_gen(gen_file,0,1);
+
+
 
   /* Allocate needed space. */
-
   if (type=='d')
   { u = mod2dense_allocate(N-M,1);
     v = mod2dense_allocate(M,1);
@@ -109,13 +110,11 @@ int main
   }
 
   /* Open source file. */
-
   srcf = open_file_std(source_file,"r");
   if (srcf==NULL)
   { fprintf(stderr,"Can't open source file: %s\n",source_file);
     exit(1);
   }
-
   /* Create encoded output file. */
 
   encf = open_file_std(encoded_file,"w");
@@ -129,7 +128,6 @@ int main
   chks = chk_alloc (M, sizeof *chks);
 
   /* Encode successive blocks. */
-
   for (n = 0; ; n++)
   { 
     /* Read block from source file. */
@@ -157,14 +155,14 @@ int main
 
     /* Check that encoded block is a code word. */
 
-    mod2sparse_mulvec (H, cblk, chks);
+    //mod2sparse_mulvec (H, cblk, chks);
 
-    for (i = 0; i<M; i++) 
-    { if (chks[i]==1)
-      { fprintf(stderr,"Output block %d is not a code word!  (Fails check %d)\n",n,i);
-        abort(); 
-      }
-    }
+    //for (i = 0; i<M; i++) 
+    //{ if (chks[i]==1)
+    //  { fprintf(stderr,"Output block %d is not a code word!  (Fails check %d)\n",n,i);
+    //    abort(); 
+    //  }
+    //}
 
     /* Write encoded block to encoded output file. */
 

@@ -56,6 +56,15 @@ void read_pchk
   FILE *f;
 
   f = open_file_std(pchk_file,"rb");
+
+  //if (intio_read(f)!=('P'<<8)+0x80)
+  //{ fprintf(stderr,"File %s doesn't contain a parity check matrix\n",pchk_file);
+  //  exit(1);
+  //}
+
+  H = mod2sparse_allocate(intio_read(f),intio_read(f));
+
+  /*
   if (f==NULL)
   { fprintf(stderr,"Can't open parity check file: %s\n",pchk_file);
     exit(1);
@@ -75,7 +84,7 @@ void read_pchk
 
   M = mod2sparse_rows(H);
   N = mod2sparse_cols(H);
-
+  */
   fclose(f);
 }
 
@@ -138,56 +147,43 @@ void read_gen
   for (i = 0; i<N; i++)
   { cols[i] = intio_read(f);
     if (feof(f) || ferror(f)) goto error;
+
+
   }
+
+  printf ("cols = {");
+  for (i = 0; i < N; i++) {
+    if (i % 5 == 0) {
+      printf ("\n");
+    }
+
+    printf("0x%02x, ", cols[i]);
+  }
+  printf("}\n");
+
 
   if (!cols_only)
   {
-    switch (type)
-    {
-      case 's':
-      { 
-        for (i = 0; i<M; i++)
-        { rows[i] = intio_read(f);
-          if (feof(f) || ferror(f)) goto error;
-        }
+    if ((G = mod2dense_read(f)) == 0) goto error;
 
-        if ((L = mod2sparse_read(f)) == 0) goto error;
-        if ((U = mod2sparse_read(f)) == 0) goto error;
-  
-        if (mod2sparse_rows(L)!=M || mod2sparse_cols(L)!=M) goto garbled;
-        if (mod2sparse_rows(U)!=M || mod2sparse_cols(U)<M) goto garbled;
-       
-        break;
-      }
-  
-      case 'd':
-      {
-        if ((G = mod2dense_read(f)) == 0) goto error;
-  
-        if (mod2dense_rows(G)!=M || mod2dense_cols(G)!=N-M) goto garbled;
-  
-        break;
-      }
-  
-      case 'm':
-      {
-        if ((G = mod2dense_read(f)) == 0) goto error;
-  
-        if (mod2dense_rows(G)!=M || mod2dense_cols(G)!=M) goto garbled;
-  
-        break;
-      }
-  
-      default: 
-      { fprintf(stderr,
-         "Unknown type of generator matrix in file %s\n",gen_file);
-        exit(1);
-      }
-    }
+    if (mod2dense_rows(G)!=M || mod2dense_cols(G)!=N-M) goto garbled;
   }
-  
-  fclose(f);
 
+  printf ("n_rows: %d, n_cols: %d\n", G->n_rows, G->n_cols);
+
+  printf ("bits = {");
+  for (i = 0; i < ((G->n_rows+mod2_wordsize-1) >> mod2_wordsize_shift)*G->n_cols; i++) {
+    if (i % 5 == 0) {
+      printf ("\n");
+    }
+    printf ("0x%08x, ", (G->bits)[i]);
+
+  }
+  printf ("}\n");
+
+
+
+  fclose(f);
   return;
 
 error:
