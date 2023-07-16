@@ -41,8 +41,8 @@ int *cols;		/* Ordering of columns in generator matrix */
 mod2sparse *L, *U;	/* Sparse LU decomposition, if type=='s' */
 int *rows;		/* Ordering of rows in generator matrix (type 's') */
 
-mod2dense *G;		/* Dense or mixed representation of generator matrix,
-			   if type=='d' or type=='m' */
+//static mod2dense G [1];		/* Dense or mixed representation of generator matrix,
+//			   if type=='d' or type=='m' */
 
 
 /* READ PARITY CHECK MATRIX.  Sets the H, M, and N global variables.  If an
@@ -107,6 +107,7 @@ void read_gen
   int no_pchk_file	/* No parity check file used? */
 )
 {
+  /*
   int M2, N2;
   FILE *f;
   int i;
@@ -193,4 +194,5 @@ error:
 garbled:
   fprintf(stderr,"Garbled generator matrix in file %s\n",gen_file);
   exit(1);
+  */
 }

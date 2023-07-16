@@ -14,5 +14,5 @@
  */
 
 void sparse_encode (char *, char *);
-void dense_encode  (char *, char *, mod2dense *, mod2dense *);
+void dense_encode  (char *, char *, mod2dense *, mod2dense *, mod2dense *, int *);
 void mixed_encode  (char *, char *, mod2dense *, mod2dense *);

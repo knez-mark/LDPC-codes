@@ -22,13 +22,13 @@ extern int M;		/* Number of rows in parity check matrix */
 extern int N;		/* Number of columns in parity check matrix */
 
 extern char type;	/* Type of generator matrix representation */
-extern int *cols;	/* Ordering of columns in generator matrix */
+//extern int cols [];	/* Ordering of columns in generator matrix */
 
 extern mod2sparse *L, *U; /* Sparse LU decomposition, if type=='s' */
 extern int *rows;	  /* Ordering of rows in generator matrix (type 's') */
 
-extern mod2dense *G;	/* Dense or mixed representation of generator matrix,
-			   if type=='d' or type=='m' */
+//extern mod2dense G [1];	/* Dense or mixed representation of generator matrix,
+//			   if type=='d' or type=='m' */
 
 
 /* PROCEDURES FOR READING DATA. */

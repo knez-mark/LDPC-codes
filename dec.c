@@ -150,7 +150,7 @@ unsigned enum_decode
         break;
       }
       case 'd':
-      { dense_encode (sblk, cblk, u, v);
+      { dense_encode (sblk, cblk, u, u, v, NULL);
         break;
       }
       case 'm':

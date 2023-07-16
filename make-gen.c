@@ -40,6 +40,7 @@ int main
   char **argv
 )
 {
+  /*
   char *pchk_file, *gen_file, *other_gen_file;
   mod2sparse_strategy strategy;
   int abandon_when, abandon_number;
@@ -48,7 +49,6 @@ int main
   char junk;
   FILE *f;
 
-  /* Look at arguments. */
 
   if (!(pchk_file = argv[1])
    || !(gen_file = argv[2])
@@ -95,8 +95,6 @@ int main
   { usage();
   }
 
-  /* Read parity check matrix. */
-
   read_pchk(pchk_file);
 
   if (N<=M)
@@ -105,7 +103,6 @@ int main
     exit(1);
   }
 
-  /* Create generator matrix file. */
 
   f = open_file_std(gen_file,"wb");
   if (f==NULL)
@@ -113,12 +110,10 @@ int main
     exit(1);
   }
 
-  /* Allocate space for row and column permutations. */
 
   cols = chk_alloc (N, sizeof *cols);
   rows = chk_alloc (M, sizeof *rows);
 
-  /* Create generator matrix with specified method. */
 
   switch (method)
   { case Sparse: 
@@ -132,14 +127,13 @@ int main
     default: abort();
   }
 
-  /* Check for error writing file. */
-
   if (ferror(f) || fclose(f)!=0)
   { fprintf(stderr,"Error writing to generator matrix file\n");
     exit(1);
   }
 
   return 0;
+  */
 }
 
 
@@ -151,6 +145,7 @@ void make_dense_mixed
   char *other_gen_file
 )
 { 
+  /*
   mod2dense *DH, *A, *A2, *AI, *B;
   int i, j, c, c2, n;
   int *rows_inv;
@@ -162,8 +157,6 @@ void make_dense_mixed
 
   mod2sparse_to_dense(H,DH);
 
-  /* If another generator matrix was specified, invert using the set of
-     columns it specifies. */
 
   if (other_gen_file)
   { 
@@ -181,16 +174,13 @@ void make_dense_mixed
     mod2dense_copycols(DH,B,cols+M);
   }
 
-  /* If no other generator matrix was specified, invert using whatever 
-     selection of rows/columns is needed to get a non-singular sub-matrix. */
-
   if (!other_gen_file)
   {
     A  = mod2dense_allocate(M,N);
     A2 = mod2dense_allocate(M,N);
 
     n = mod2dense_invert_selected(DH,A2,rows,cols);
-    mod2sparse_to_dense(H,DH);  /* DH was destroyed by invert_selected */
+    mod2sparse_to_dense(H,DH);
 
     if (n>0)
     { fprintf(stderr,"Note: Parity check matrix has %d redundant checks\n",n);
@@ -209,8 +199,6 @@ void make_dense_mixed
     mod2dense_copycols(DH,B,cols+M);
   }
 
-  /* Form final generator matrix. */
-
   if (method==Dense) 
   { mod2dense_multiply(AI,B,G);
   }
@@ -220,8 +208,6 @@ void make_dense_mixed
   else
   { abort();
   }
-
-  /* Compute and print number of 1s. */
 
   if (method==Dense)  
   { c = 0;
@@ -250,8 +236,6 @@ void make_dense_mixed
      (double)c/M, (double)c2/M, (double)(c+c2)/M);
   }
 
-  /* Write the represention of the generator matrix to the file. */
-
   intio_write(f,('G'<<8)+0x80);
 
   if (method==Dense)      
@@ -269,6 +253,7 @@ void make_dense_mixed
   }
 
   mod2dense_write (f, G);
+  */
 }
 
 
@@ -281,10 +266,9 @@ void make_sparse
   int abandon_when
 )
 {
+  /*
   int n, cL, cU, cB;
   int i;
-
-  /* Find LU decomposition. */
 
   L = mod2sparse_allocate(M,M);
   U = mod2sparse_allocate(M,N);
@@ -302,8 +286,6 @@ void make_sparse
     exit(1);
   }
 
-  /* Compute and print number of 1s. */
-
   cL = cU = cB = 0;
 
   for (i = 0; i<M; i++) cL += mod2sparse_count_row(L,i);
@@ -313,8 +295,6 @@ void make_sparse
   fprintf(stderr,
    "Number of 1s per check in L is %.1f, U is %.1f, B is %.1f, total is %.1f\n",
     (double)cU/M, (double)cL/M, (double)cB/M, (double)(cL+cU+cB)/M);
-
-  /* Write it all to the generator matrix file. */
 
   intio_write(f,('G'<<8)+0x80);
 
@@ -333,6 +313,7 @@ void make_sparse
 
   mod2sparse_write (f, L);
   mod2sparse_write (f, U);
+  */
 }
 
 

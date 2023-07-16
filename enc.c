@@ -37,44 +37,6 @@ void sparse_encode
   char *cblk
 )
 {
-  int i, j;
-
-  mod2entry *e;
-  char *x, *y;
-
-  x = chk_alloc (M, sizeof *x);
-  y = chk_alloc (M, sizeof *y);
-
-  /* Multiply the vector of source bits by the systematic columns of the 
-     parity check matrix, giving x.  Also copy these bits to the coded block. */
-
-  for (i = 0; i<M; i++) x[i] = 0;
-
-  for (j = M; j<N; j++)
-  { 
-    cblk[cols[j]] = sblk[j-M];
-
-    if (sblk[j-M]==1)
-    { for (e = mod2sparse_first_in_col(H,cols[j]);
-           !mod2sparse_at_end(e);
-           e = mod2sparse_next_in_col(e))
-      { x[mod2sparse_row(e)] ^= 1;
-      }
-    }
-  }
- 
-  /* Solve Ly=x for y by forward substitution, then U(cblk)=y by backward
-     substitution. */
-
-  if (!mod2sparse_forward_sub(L,rows,x,y)
-   || !mod2sparse_backward_sub(U,cols,y,cblk))
-  { 
-    abort(); /* Shouldn't occur, even if the parity check matrix has 
-                redundant rows */
-  }
-
-  free(x);
-  free(y);
 }
 
 
@@ -83,8 +45,10 @@ void sparse_encode
 void dense_encode
 ( char *sblk,
   char *cblk,
+  mod2dense *G,
   mod2dense *u,
-  mod2dense *v
+  mod2dense *v,
+  int * cols
 )
 {
   int j;
@@ -120,35 +84,4 @@ void mixed_encode
   mod2dense *v
 )
 {
-  mod2entry *e;
-  int j;
-
-  /* Multiply the vector of source bits by the message bit columns of the 
-     parity check matrix.  Also copy these bits to the coded block.  Take
-     account of how columns have been reordered. */
-
-  mod2dense_clear(u);
-
-  for (j = M; j<N; j++)
-  { 
-    cblk[cols[j]] = sblk[j-M];
-
-    if (sblk[j-M]==1)
-    { for (e = mod2sparse_first_in_col(H,cols[j]);
-           !mod2sparse_at_end(e);
-           e = mod2sparse_next_in_col(e))
-      { (void) mod2dense_flip(u,mod2sparse_row(e),0);
-      }
-    }
-  }
-
-  /* Multiply by Inv(A) to produce check bits. */
-
-  mod2dense_multiply(G,u,v);
-
-  /* Copy check bits to the right places in the coded block. */
-
-  for (j = 0; j<M; j++)
-  { cblk[cols[j]] = mod2dense_get(v,j,0);
-  }
 }
