@@ -25,23 +25,6 @@
 #include "rcode.h"
 #include "enc.h"
 
-#define LDPC_N 192
-#define LDPC_K 122
-
-/* The procedures in this module obtain the generator matrix to use for
-   encoding from the global variables declared in rcode.h */
-
-
-/* ENCODE A BLOCK USING A SPARSE REPRESENTATION OF THE GENERATOR MATRIX. */
-
-void sparse_encode
-( char *sblk,
-  char *cblk
-)
-{
-}
-
-
 /* ENCODE A BLOCK USING DENSE REPRESENTATION OF GENERATOR MATRIX. */
 
 void dense_encode
@@ -74,16 +57,4 @@ void dense_encode
   for (j = 0; j<(LDPC_N - LDPC_K); j++)
   { cblk[cols[j]] = mod2dense_get(v,j,0);
   }
-}
-
-
-/* ENCODE A BLOCK USING MIXED REPRESENTATION OF GENERATOR MATRIX. */
-
-void mixed_encode
-( char *sblk,
-  char *cblk,
-  mod2dense *u,
-  mod2dense *v
-)
-{
 }

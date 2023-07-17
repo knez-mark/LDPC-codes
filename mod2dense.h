@@ -86,17 +86,10 @@ typedef struct
 
 /* PROCEDURES. */
 
-mod2dense *mod2dense_allocate (int, int);
-void mod2dense_free           (mod2dense *);
-
 void mod2dense_clear    (mod2dense *);
 void mod2dense_copy     (mod2dense *, mod2dense *);
 void mod2dense_copyrows (mod2dense*, mod2dense *, int *);
 void mod2dense_copycols (mod2dense*, mod2dense *, int *);
-
-void mod2dense_print      (FILE *, mod2dense *);
-int  mod2dense_write      (FILE *, mod2dense *);
-mod2dense *mod2dense_read (FILE *);
 
 int  mod2dense_get (mod2dense *, int, int);
 void mod2dense_set (mod2dense *, int, int, int);

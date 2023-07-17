@@ -31,45 +31,9 @@ LINK =    cc          # Command to link a program
 # MAKE ALL THE MAIN PROGRAMS.  First makes the modules used.
 
 progs:	modules
-	$(COMPILE) make-pchk.c
-	$(LINK) make-pchk.o mod2sparse.o mod2dense.o mod2convert.o \
-	   rcode.o alloc.o intio.o open.o -lm -o make-pchk
-	$(COMPILE) alist-to-pchk.c
-	$(LINK) alist-to-pchk.o mod2sparse.o mod2dense.o mod2convert.o \
-	   rcode.o alloc.o intio.o open.o -lm -o alist-to-pchk
-	$(COMPILE) pchk-to-alist.c
-	$(LINK) pchk-to-alist.o mod2sparse.o mod2dense.o mod2convert.o \
-	   rcode.o alloc.o intio.o open.o -lm -o pchk-to-alist
-	$(COMPILE) make-ldpc.c
-	$(LINK) make-ldpc.o mod2sparse.o mod2dense.o mod2convert.o \
-	   rcode.o rand.o alloc.o intio.o open.o distrib.o -lm -o make-ldpc
-	$(COMPILE) print-pchk.c
-	$(LINK) print-pchk.o mod2sparse.o mod2dense.o mod2convert.o \
-	   rcode.o rand.o alloc.o intio.o open.o -lm -o print-pchk
-	$(COMPILE) make-gen.c
-	$(LINK) make-gen.o mod2sparse.o mod2dense.o mod2convert.o \
-	   rcode.o alloc.o intio.o open.o -lm -o make-gen
-	$(COMPILE) print-gen.c
-	$(LINK) print-gen.o mod2sparse.o mod2dense.o mod2convert.o \
-	   rcode.o rand.o alloc.o intio.o open.o -lm -o print-gen
-	$(COMPILE) rand-src.c
-	$(LINK) rand-src.o rand.o open.o -lm -o rand-src
 	$(COMPILE) encode.c
-	$(LINK) encode.o mod2sparse.o mod2dense.o mod2convert.o \
-	   enc.o rcode.o rand.o alloc.o intio.o blockio.o open.o -lm -o encode
-	$(COMPILE) transmit.c
-	$(LINK) transmit.o channel.o rand.o open.o -lm -o transmit
-	$(COMPILE) decode.c
-	$(LINK) decode.o channel.o mod2sparse.o mod2dense.o mod2convert.o \
-	   enc.o check.o \
-	   rcode.o rand.o alloc.o intio.o blockio.o dec.o open.o -lm -o decode
-	$(COMPILE) extract.c
-	$(LINK) extract.o mod2sparse.o mod2dense.o mod2convert.o \
-	   rcode.o alloc.o intio.o blockio.o open.o -lm -o extract
-	$(COMPILE) verify.c
-	$(LINK) verify.o mod2sparse.o mod2dense.o mod2convert.o check.o \
-	   rcode.o alloc.o intio.o blockio.o open.o -lm -o verify
-
+	$(LINK) encode.o mod2dense.o \
+	   enc.o -lm -o encode
 
 # MAKE THE TEST PROGRAMS.  First makes the modules used.
 
@@ -90,19 +54,8 @@ tests:	modules
 # MAKE THE MODULES USED BY THE PROGRAMS.
 
 modules:
-	$(COMPILE) rcode.c
-	$(COMPILE) channel.c
-	$(COMPILE) dec.c
 	$(COMPILE) enc.c
-	$(COMPILE) alloc.c
-	$(COMPILE) intio.c
-	$(COMPILE) blockio.c
-	$(COMPILE) check.c
-	$(COMPILE) open.c
 	$(COMPILE) mod2dense.c
-	$(COMPILE) mod2sparse.c
-	$(COMPILE) mod2convert.c
-	$(COMPILE) distrib.c
 	$(COMPILE) -DRAND_FILE=\"`pwd`/randfile\" rand.c
 
 

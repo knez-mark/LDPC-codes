@@ -18,9 +18,6 @@
 #include "mod2dense.h"
 #include "enc.h"
 
-#define LDPC_N 192
-#define LDPC_K 122
-
 static mod2dense G [1];		/* Dense or mixed representation of generator matrix,
 			   if type=='d' or type=='m' */
 

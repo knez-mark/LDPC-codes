@@ -13,6 +13,7 @@
  * risk.
  */
 
-void sparse_encode (char *, char *);
+#define LDPC_N 192
+#define LDPC_K 122
+
 void dense_encode  (char *, char *, mod2dense *, mod2dense *, mod2dense *, int *);
-void mixed_encode  (char *, char *, mod2dense *, mod2dense *);
