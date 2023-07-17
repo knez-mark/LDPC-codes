@@ -87,20 +87,10 @@ typedef struct
 /* PROCEDURES. */
 
 void mod2dense_clear    (mod2dense *);
-void mod2dense_copy     (mod2dense *, mod2dense *);
-void mod2dense_copyrows (mod2dense*, mod2dense *, int *);
-void mod2dense_copycols (mod2dense*, mod2dense *, int *);
 
 int  mod2dense_get (mod2dense *, int, int);
 void mod2dense_set (mod2dense *, int, int, int);
-int  mod2dense_flip(mod2dense *, int, int);
 
 void mod2dense_transpose (mod2dense *, mod2dense *);
 void mod2dense_add       (mod2dense *, mod2dense *, mod2dense *);
 void mod2dense_multiply  (mod2dense *, mod2dense *, mod2dense *);
-
-int mod2dense_equal (mod2dense *, mod2dense *);
-
-int mod2dense_invert          (mod2dense *, mod2dense *);
-int mod2dense_forcibly_invert (mod2dense *, mod2dense *, int *, int *);
-int mod2dense_invert_selected (mod2dense *, mod2dense *, int *, int *);

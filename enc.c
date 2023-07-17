@@ -13,16 +13,7 @@
  * risk.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#include "rand.h"
-#include "alloc.h"
-#include "mod2sparse.h"
 #include "mod2dense.h"
-#include "mod2convert.h"
-#include "rcode.h"
 #include "enc.h"
 
 /* ENCODE A BLOCK USING DENSE REPRESENTATION OF GENERATOR MATRIX. */
