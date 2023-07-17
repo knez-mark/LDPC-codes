@@ -14,18 +14,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 
-#include "rand.h"
-#include "alloc.h"
-#include "blockio.h"
-#include "open.h"
-#include "mod2sparse.h"
 #include "mod2dense.h"
-#include "mod2convert.h"
-#include "rcode.h"
 #include "enc.h"
 
 #define LDPC_N 192
@@ -34,7 +24,8 @@
 static mod2dense G [1];		/* Dense or mixed representation of generator matrix,
 			   if type=='d' or type=='m' */
 
-static mod2word * col [LDPC_K*((LDPC_N - LDPC_K+mod2_wordsize-1) >> mod2_wordsize_shift)];
+static mod2word * G_col [LDPC_K*((LDPC_N - LDPC_K+mod2_wordsize-1) >> mod2_wordsize_shift)];
+static mod2word * u_col [1], * v_col [1];
 
 static int cols [] = {0x00, 0x01, 0x02, 0x03, 0x04, 
                       0x05, 0x06, 0x07, 0x08, 0x09, 
@@ -77,7 +68,7 @@ static int cols [] = {0x00, 0x01, 0x02, 0x03, 0x04,
                       0xbe, 0xbf};
 
 // Generator matrix for LDPC
-static mod2word bits [] = {0xa01800f8, 0x0002001c, 0x00000028, 0xa2520078, 0x1000a00c, 
+static mod2word G_bits [] = {0xa01800f8, 0x0002001c, 0x00000028, 0xa2520078, 0x1000a00c, 
                            0x00000028, 0x02c00800, 0x00000450, 0x00000000, 0x1694fd49, 
                            0xd081e056, 0x00000026, 0xc1ca8387, 0x1000a134, 0x00000028, 
                            0xc0869b38, 0x00400004, 0x00000028, 0x0014000d, 0x5001e004, 
@@ -151,107 +142,90 @@ static mod2word bits [] = {0xa01800f8, 0x0002001c, 0x00000028, 0xa2520078, 0x100
                            0x0003401c, 0x00000028, 0x089864fe, 0x04400010, 0x00000000, 
                            0x001e1277, 0x00004004, 0x00000010, 0x22cc50fb, 0x0000a410, 
                            0x00000000};
-void usage(void);
+
+static mod2word u_bits [(LDPC_K + mod2_wordsize - 1) >> mod2_wordsize_shift];
+static mod2word v_bits [(LDPC_N - LDPC_K + mod2_wordsize - 1) >> mod2_wordsize_shift];
+
+static char sblk [] = {0, 0, 0, 0, 0, 0, 0, 0, 
+                       0, 0, 0, 0, 0, 0, 0, 1, 
+                       0, 0, 0, 0, 0, 0, 1, 0, 
+                       0, 0, 0, 0, 0, 0, 1, 1, 
+                       0, 0, 0, 0, 0, 1, 0, 0, 
+                       0, 0, 0, 0, 0, 1, 0, 1, 
+                       0, 0, 0, 0, 0, 1, 1, 0, 
+                       0, 0, 0, 0, 0, 1, 1, 1, 
+                       0, 0, 0, 0, 1, 0, 0, 0, 
+                       0, 0, 0, 0, 1, 0, 0, 1, 
+                       0, 0, 0, 0, 1, 0, 1, 0, 
+                       0, 0, 0, 0, 1, 0, 1, 1, 
+                       0, 0, 0, 0, 1, 1, 0, 0, 
+                       0, 0, 0, 0, 1, 1, 0, 1, 
+                       0, 0, 0, 0, 1, 1, 1, 0, 
+                       0, 0};
+
+static char cblk [LDPC_N];
 
 /* MAIN PROGRAM. */
 
-int main
-( int argc,
-  char **argv
-)
+int main ()
 {
-  char *source_file, *encoded_file;
-  char *pchk_file, *gen_file;
-  mod2dense *u, *v;
+  static mod2dense u [1], v [1];
 
-  FILE *srcf, *encf;
-  char *sblk, *cblk, *chks;
   int i, n;
 
-  if (!(pchk_file = argv[1])
-   || !(gen_file = argv[2])
-   || !(source_file = argv[3])
-   || !(encoded_file = argv[4])
-   || argv[5])
-  { usage();
-  }
-
-  /* Create the struct G here */
+  /* Allocate space for generator matrix. */
 
   G->n_rows = LDPC_N - LDPC_K;
   G->n_cols = LDPC_K;
-  G->n_words = (LDPC_N - LDPC_K+mod2_wordsize-1) >> mod2_wordsize_shift;
+  G->n_words = (LDPC_N - LDPC_K + mod2_wordsize-1) >> mod2_wordsize_shift;
 
-  G->col = col;
-  G->bits = bits;
+  G->col = G_col;
+  G->bits = G_bits;
 
   for (i = 0; i<G->n_cols; i++)
   { 
     G->col[i] = G->bits + i*G->n_words;
   }
 
-  N = LDPC_N;
-  M = LDPC_N - LDPC_K;
-
   /* Allocate needed space. */
-  u = mod2dense_allocate(N-M,1);
-  v = mod2dense_allocate(M,1);
 
-  /* Open source file. */
-  srcf = open_file_std(source_file,"r");
-  if (srcf==NULL)
-  { fprintf(stderr,"Can't open source file: %s\n",source_file);
-    exit(1);
-  }
-  /* Create encoded output file. */
+  u->n_rows = LDPC_K;
+  u->n_cols = 1;
+  u->n_words = (LDPC_K + mod2_wordsize - 1) >> mod2_wordsize_shift;
+  u->col = u_col;
+  u->bits = u_bits;
+  u->col[0] = u->bits;
 
-  encf = open_file_std(encoded_file,"w");
-  if (encf==NULL)
-  { fprintf(stderr,"Can't create file for encoded data: %s\n",encoded_file);
-    exit(1);
-  }
-
-  sblk = chk_alloc (N-M, sizeof *sblk);
-  cblk = chk_alloc (N, sizeof *cblk);
-  chks = chk_alloc (M, sizeof *chks);
+  v->n_rows = LDPC_N - LDPC_K;
+  v->n_cols = 1;
+  v->n_words = (LDPC_N - LDPC_K + mod2_wordsize - 1) >> mod2_wordsize_shift;
+  v->col = v_col;
+  v->bits = v_bits;
+  v->col[0] = v->bits;
 
   /* Encode successive blocks. */
   for (n = 0; ; n++)
-  { 
-    /* Read block from source file. */
-
-    if (blockio_read(srcf,sblk,N-M)==EOF) 
-    { break;
-    }
-
+  {
     /* Compute encoded block. */
 
     dense_encode (sblk, cblk, G, u, v, cols);
 
-    /* Write encoded block to encoded output file. */
+    printf ("encoded: ");
+    for (i = 0; i < LDPC_N; i++) {
+      if (i % 16 == 0) {
+        printf ("\n");
+      }
+      printf ("%d, ", cblk[i]);
 
-    blockio_write(encf,cblk,N);
-    if (ferror(encf))
-    { break;
     }
+    printf("\n");
+
+    //In this case, break after encoding only once
+    break;
   }
 
   fprintf(stderr,
-    "Encoded %d blocks, source block size %d, encoded block size %d\n",n,N-M,N);
-
-  if (ferror(encf) || fclose(encf)!=0)
-  { fprintf(stderr,"Error writing encoded blocks to %s\n",encoded_file);
-    exit(1);
-  }
+    "Encoded %d blocks, source block size %d, encoded block size %d\n", n+1, LDPC_K, LDPC_N);
 
   return 0;
-}
-
-
-/* PRINT USAGE MESSAGE AND EXIT. */
-
-void usage(void)
-{ fprintf(stderr,
-   "Usage:  encode [ -f ] pchk-file gen-file source-file encoded-file\n");
-  exit(1);
 }

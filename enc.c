@@ -25,6 +25,8 @@
 #include "rcode.h"
 #include "enc.h"
 
+#define LDPC_N 192
+#define LDPC_K 122
 
 /* The procedures in this module obtain the generator matrix to use for
    encoding from the global variables declared in rcode.h */
@@ -55,21 +57,21 @@ void dense_encode
 
   /* Copy source bits to the systematic part of the coded block. */
 
-  for (j = M; j<N; j++) 
-  { cblk[cols[j]] = sblk[j-M];
+  for (j = LDPC_N - LDPC_K; j<LDPC_N; j++) 
+  { cblk[cols[j]] = sblk[j-(LDPC_N - LDPC_K)];
   }
 
   /* Multiply by Inv(A) X B to produce check bits. */
 
-  for (j = M; j<N; j++)
-  { mod2dense_set(u,j-M,0,sblk[j-M]); 
+  for (j = LDPC_N - LDPC_K; j<LDPC_N; j++)
+  { mod2dense_set(u,j-(LDPC_N - LDPC_K),0,sblk[j-(LDPC_N - LDPC_K)]); 
   }
   
   mod2dense_multiply(G,u,v);
 
   /* Copy check bits to the right places in the coded block. */
 
-  for (j = 0; j<M; j++)
+  for (j = 0; j<(LDPC_N - LDPC_K); j++)
   { cblk[cols[j]] = mod2dense_get(v,j,0);
   }
 }
