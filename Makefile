@@ -31,8 +31,8 @@ LINK =    cc          # Command to link a program
 # MAKE ALL THE MAIN PROGRAMS.  First makes the modules used.
 
 progs:	modules
-	$(COMPILE) encode.c
-	$(LINK) encode.o mod2dense.o \
+	$(COMPILE) main.c
+	$(LINK) main.o encode.o mod2dense.o \
 	   enc.o -lm -o encode
 
 # MAKE THE MODULES USED BY THE PROGRAMS.
@@ -40,6 +40,7 @@ progs:	modules
 modules:
 	$(COMPILE) enc.c
 	$(COMPILE) mod2dense.c
+	$(COMPILE) encode.c
 
 # CLEAN UP ALL PROGRAMS AND REMOVE ALL FILES PRODUCED BY TESTS AND EXAMPLES.
 

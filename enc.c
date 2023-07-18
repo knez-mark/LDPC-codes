@@ -15,6 +15,7 @@
 
 #include "mod2dense.h"
 #include "enc.h"
+#include "encode.h"
 
 /* ENCODE A BLOCK USING DENSE REPRESENTATION OF GENERATOR MATRIX. */
 

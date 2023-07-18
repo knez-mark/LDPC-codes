@@ -1,4 +1,4 @@
-/* ENC.H - Interface to encoding procedures. */
+/* ENCODE.H - LDPC encoding interface. */
 
 /* Copyright (c) 1995-2012 by Radford M. Neal.
  *
@@ -13,4 +13,7 @@
  * risk.
  */
 
-void dense_encode  (char *, char *, mod2dense *, mod2dense *, mod2dense *, int *);
+#define LDPC_N 192
+#define LDPC_K 122
+
+void LDPC_encode  (char *, char *);

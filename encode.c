@@ -17,6 +17,7 @@
 
 #include "mod2dense.h"
 #include "enc.h"
+#include "encode.h"
 
 static mod2dense G [1];		/* Dense or mixed representation of generator matrix,
 			   if type=='d' or type=='m' */
@@ -164,7 +165,7 @@ static char cblk [LDPC_N];
 
 /* MAIN PROGRAM. */
 
-int main ()
+void LDPC_encode (char * sblk, char * cblk)
 {
   static mod2dense u [1], v [1];
 
@@ -207,22 +208,10 @@ int main ()
 
     dense_encode (sblk, cblk, G, u, v, cols);
 
-    printf ("encoded: ");
-    for (i = 0; i < LDPC_N; i++) {
-      if (i % 16 == 0) {
-        printf ("\n");
-      }
-      printf ("%d, ", cblk[i]);
-
-    }
-    printf("\n");
-
     //In this case, break after encoding only once
     break;
   }
 
   fprintf(stderr,
     "Encoded %d blocks, source block size %d, encoded block size %d\n", n+1, LDPC_K, LDPC_N);
-
-  return 0;
 }
