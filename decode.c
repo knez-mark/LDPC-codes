@@ -26,13 +26,13 @@
 #include "mod2dense.h"
 #include "mod2convert.h"
 #include "channel.h"
-#include "rcode.h"
 #include "check.h"
 #include "dec.h"
 
+#define LDPC_N 192
+#define LDPC_M 56
 
 void usage(void);
-
 
 /* MAIN PROGRAM. */
 
@@ -41,6 +41,9 @@ int main
   char **argv
 )
 {
+  int M = LDPC_M, N = LDPC_N;
+  mod2sparse *H;
+
   char *pchk_file, *rfile, *dfile, *pfile;
   char **meth;
   FILE *rf, *df, *pf;
@@ -57,7 +60,6 @@ int main
   double chngd, tot_changed;	/* Double because can be fraction if lratio==1*/
 
   int tot_valid;
-  char junk;
   int valid;
 
   int i, j, k;
@@ -114,25 +116,8 @@ int main
   /* Look at the specification of the decoding method, which starts at meth and
      continues to the end of the command line (marked by a zero pointer). */
 
-  if (!meth[0]) usage();
-
-  if (strcmp(meth[0],"prprp")==0)
-  { dec_method = Prprp;
-    if (!meth[1] || sscanf(meth[1],"%d%c",&max_iter,&junk)!=1 || meth[2]) 
-    { usage();
-    }
-  }
-  else if (strcmp(meth[0],"enum-block")==0)
-  { dec_method = Enum_block;
-    if (!(gen_file = meth[1]) || meth[2]) usage();
-  }
-  else if (strcmp(meth[0],"enum-bit")==0)
-  { dec_method = Enum_bit;
-    if (!(gen_file = meth[1]) || meth[2]) usage();
-  }
-  else 
-  { usage();
-  }
+  dec_method = Prprp;
+  max_iter = 250;
 
   /* Check that we aren't overusing standard input or output. */
 
@@ -150,7 +135,10 @@ int main
 
   /* Read parity check file. */
 
-  read_pchk(pchk_file);
+  H = mod2sparse_read_H();
+
+  M = mod2sparse_rows(H);
+  N = mod2sparse_cols(H);
 
   if (N<=M)
   { fprintf(stderr,
@@ -172,16 +160,6 @@ int main
   if (df==NULL)
   { fprintf(stderr,"Can't create file for decoded data: %s\n",dfile);
     exit(1);
-  }
-
-  /* Create file for bit probabilities, if specified. */
-
-  if (pfile)
-  { pf = open_file_std(pfile,"w");
-    if (pf==NULL)
-    { fprintf(stderr,"Can't create file for bit probabilities: %s\n",pfile);
-      exit(1);
-    }
   }
 
   /* Allocate space for data from channel. */
@@ -215,17 +193,7 @@ int main
 
   /* Do the setup for the decoding method. */
 
-  switch (dec_method)
-  { case Prprp: 
-    { prprp_decode_setup();
-      break;
-    }
-    case Enum_block: case Enum_bit:
-    { enum_decode_setup();
-      break;
-    }
-    default: abort();
-  }
+  prprp_decode_setup();
 
   /* Read received blocks, decode, and write decoded blocks. */
 
@@ -295,17 +263,7 @@ int main
 
     /* Try to decode using the specified method. */
 
-    switch (dec_method)
-    { case Prprp:
-      { iters = prprp_decode (H, lratio, dblk, pchk, bitpr);
-        break;
-      }
-      case Enum_block: case Enum_bit:
-      { iters = enum_decode (lratio, dblk, bitpr, dec_method==Enum_block);
-        break;
-      }
-      default: abort();
-    }
+    iters = prprp_decode (H, lratio, dblk, pchk, bitpr);
 
     /* See if it worked, and how many bits were changed. */
 

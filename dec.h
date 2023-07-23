@@ -32,9 +32,6 @@ extern char *gen_file;	/* Generator file for Enum_block and Enum_bit */
 
 /* PROCEDURES RELATING TO DECODING METHODS. */
 
-void enum_decode_setup (void);
-unsigned enum_decode (double *, char *, double *, int);
-
 void prprp_decode_setup (void);
 unsigned prprp_decode 
 (mod2sparse *, double *, char *, char *, double *);

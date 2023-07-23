@@ -121,7 +121,7 @@ void mod2sparse_copycols (mod2sparse *, mod2sparse *, int *);
 
 void mod2sparse_print       (FILE *, mod2sparse *);
 int  mod2sparse_write       (FILE *, mod2sparse *);
-mod2sparse *mod2sparse_read (FILE *);
+mod2sparse *mod2sparse_read_H ();
 
 mod2entry *mod2sparse_find   (mod2sparse *, int, int);
 mod2entry *mod2sparse_insert (mod2sparse *, int, int);

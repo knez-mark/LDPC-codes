@@ -34,4 +34,3 @@ extern mod2dense *G;	/* Dense or mixed representation of generator matrix,
 /* PROCEDURES FOR READING DATA. */
 
 void read_pchk (char *);
-void read_gen  (char *, int, int);

@@ -340,9 +340,8 @@ int mod2sparse_write
 
 /* READ A SPARSE MOD2 MATRIX STORED IN MACHINE-READABLE FORM FROM A FILE. */
 
-mod2sparse *mod2sparse_read
-( FILE *f
-)
+mod2sparse *mod2sparse_read_H
+()
 {
   int n_rows, n_cols;
   int v, row, col;
