@@ -32,9 +32,9 @@ LINK =    cc          # Command to link a program
 
 progs:	modules
 	$(COMPILE) decode.c
-	$(LINK) decode.o channel.o mod2sparse.o mod2dense.o \
+	$(LINK) decode.o mod2sparse.o mod2dense.o \
 	   check.o \
-	   rand.o alloc.o intio.o blockio.o dec.o open.o -lm -o decode
+	   alloc.o intio.o dec.o open.o -lm -o decode
 
 
 # MAKE THE TEST PROGRAMS.  First makes the modules used.
@@ -56,7 +56,6 @@ tests:	modules
 # MAKE THE MODULES USED BY THE PROGRAMS.
 
 modules:
-	$(COMPILE) channel.c
 	$(COMPILE) dec.c
 	$(COMPILE) alloc.c
 	$(COMPILE) intio.c
