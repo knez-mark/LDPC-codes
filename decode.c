@@ -51,8 +51,19 @@ int main
   double *lratio;
   double *bitpr;
 
-  double *awn_data;		/* Places to store channel data */
-  int bsc_data [] = {};
+  //Four bits altered
+  int bsc_data [] = {1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 
+                     0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 
+                     1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 
+                     0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                     0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 
+                     0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 
+                     0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 
+                     0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 
+                     0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 
+                     0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 
+                     0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 
+                     0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0};
 
   unsigned iters;		/* Unsigned because can be huge for enum */
   double tot_iter;		/* Double because can be huge for enum */
@@ -145,36 +156,12 @@ int main
     exit(1);
   }
 
-  /* Open file of received data. */
-
-  //rf = open_file_std(rfile,"r");
-  //if (rf==NULL)
-  //{ fprintf(stderr,"Can't open file of received data: %s\n",rfile);
-  //  exit(1);
-  //}
-
   /* Create file for decoded data. */
 
   df = open_file_std(dfile,"w");
   if (df==NULL)
   { fprintf(stderr,"Can't create file for decoded data: %s\n",dfile);
     exit(1);
-  }
-
-  /* Allocate space for data from channel. */
-
-  switch (channel)
-  { case BSC:
-    { bsc_data = chk_alloc (N, sizeof *bsc_data);
-      break;
-    }
-    case AWGN: case AWLN:
-    { awn_data = chk_alloc (N, sizeof *awn_data);
-      break;
-    }
-    default:
-    { abort();
-    }
   }
 
   /* Allocate other space. */
@@ -200,64 +187,13 @@ int main
   tot_valid = 0;
   tot_changed = 0;
 
-  for (block_no = 0; ; block_no++)
-  { 
-    /* Read block from received file, exit if end-of-file encountered. */
-
-    for (i = 0; i<N; i++)
-    { int c;
-      switch (channel)
-      { case BSC:  
-        { c = fscanf(rf,"%1d",&bsc_data[i]); 
-          break;
-        }
-        case AWGN: case AWLN:
-        { c = fscanf(rf,"%lf",&awn_data[i]); 
-          break;
-        }
-        default: abort();
-      }
-      if (c==EOF) 
-      { if (i>0)
-        { fprintf(stderr,
-          "Warning: Short block (%d long) at end of received file ignored\n",i);
-        }
-        goto done;
-      }
-      if (c<1 || channel==BSC && bsc_data[i]!=0 && bsc_data[i]!=1)
-      { fprintf(stderr,"File of received data is garbled\n");
-        exit(1);
-      }
-    }
-
+  for (block_no = 0; block_no < 1; block_no++)
+  {
     /* Find likelihood ratio for each bit. */
 
-    switch (channel)
-    { case BSC:
-      { for (i = 0; i<N; i++)
-        { lratio[i] = bsc_data[i]==1 ? (1-error_prob) / error_prob
-                                     : error_prob / (1-error_prob);
-        }
-        break;
-      }
-      case AWGN:
-      { for (i = 0; i<N; i++)
-        { lratio[i] = exp(2*awn_data[i]/(std_dev*std_dev));
-        }
-        break;
-      }
-      case AWLN:
-      { for (i = 0; i<N; i++)
-        { double e, d1, d0;
-          e = exp(-(awn_data[i]-1)/lwidth);
-          d1 = 1 / ((1+e)*(1+1/e));
-          e = exp(-(awn_data[i]+1)/lwidth);
-          d0 = 1 / ((1+e)*(1+1/e));
-          lratio[i] = d1/d0;
-        }
-        break;
-      }
-      default: abort();
+    for (i = 0; i<N; i++)
+    { lratio[i] = bsc_data[i]==1 ? (1-error_prob) / error_prob
+                                  : error_prob / (1-error_prob);
     }
 
     /* Try to decode using the specified method. */
