@@ -26,7 +26,6 @@
 #include "mod2dense.h"
 #include "mod2convert.h"
 #include "rand.h"
-#include "rcode.h"
 #include "check.h"
 #include "dec.h"
 

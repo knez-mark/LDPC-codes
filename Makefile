@@ -65,8 +65,6 @@ modules:
 	$(COMPILE) open.c
 	$(COMPILE) mod2dense.c
 	$(COMPILE) mod2sparse.c
-	$(COMPILE) mod2convert.c
-	$(COMPILE) distrib.c
 	$(COMPILE) -DRAND_FILE=\"`pwd`/randfile\" rand.c
 
 

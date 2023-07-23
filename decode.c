@@ -24,7 +24,6 @@
 #include "open.h"
 #include "mod2sparse.h"
 #include "mod2dense.h"
-#include "mod2convert.h"
 #include "channel.h"
 #include "check.h"
 #include "dec.h"
@@ -41,7 +40,7 @@ int main
   char **argv
 )
 {
-  int M = LDPC_M, N = LDPC_N;
+  int M, N;
   mod2sparse *H;
 
   char *pchk_file, *rfile, *dfile, *pfile;
@@ -53,7 +52,7 @@ int main
   double *bitpr;
 
   double *awn_data;		/* Places to store channel data */
-  int *bsc_data;
+  int bsc_data [] = {};
 
   unsigned iters;		/* Unsigned because can be huge for enum */
   double tot_iter;		/* Double because can be huge for enum */
@@ -148,11 +147,11 @@ int main
 
   /* Open file of received data. */
 
-  rf = open_file_std(rfile,"r");
-  if (rf==NULL)
-  { fprintf(stderr,"Can't open file of received data: %s\n",rfile);
-    exit(1);
-  }
+  //rf = open_file_std(rfile,"r");
+  //if (rf==NULL)
+  //{ fprintf(stderr,"Can't open file of received data: %s\n",rfile);
+  //  exit(1);
+  //}
 
   /* Create file for decoded data. */
 
