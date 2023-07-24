@@ -17,8 +17,6 @@
 /* NOTE:  See decoding.html for general documentation on the decoding methods */
 
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 
 #include "mod2sparse.h"
@@ -27,14 +25,6 @@
 
 
 /* GLOBAL VARIABLES.  Declared in dec.h. */
-
-decoding_method dec_method;	/* Decoding method to use */
-
-int table;	/* Trace option, 2 for a table of decoding details */
-int block_no;	/* Number of current block, from zero */
-
-int max_iter;	/* Maximum number of iteratons of decoding to do */
-char *gen_file;	/* Generator file for Enum_block and Enum_bit */
 
 /* DECODE USING PROBABILITY PROPAGATION.  Tries to find the most probable 
    values for the bits of the codeword, given a parity check matrix (H), and
@@ -54,14 +44,6 @@ char *gen_file;	/* Generator file for Enum_block and Enum_bit */
    The setup procedure immediately below outputs headers for the detailed trace
    file, if required.
 */
-
-void prprp_decode_setup (void)
-{
-  if (table==2)
-  { printf(
-     "  block  iter  changed  perrs    loglik   Eperrs   Eloglik  entropy\n");
-  }
-}
 
 unsigned prprp_decode
 ( mod2sparse *H,	/* Parity check matrix */
@@ -86,7 +68,7 @@ unsigned prprp_decode
   { 
     c = check(H,dblk,pchk);
    
-    if (n==max_iter || n==-max_iter || (max_iter>0 && c==0))
+    if (n==MAX_ITER || n==-MAX_ITER || (MAX_ITER>0 && c==0))
     { break; 
     }
 

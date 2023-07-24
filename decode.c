@@ -14,9 +14,6 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 
 #include "mod2sparse.h"
 #include "check.h"
@@ -24,6 +21,7 @@
 
 #define LDPC_N 192
 #define LDPC_M 56
+#define ERROR_PROB 0.02
 
 /* MAIN PROGRAM. */
 
@@ -54,23 +52,11 @@ int main
                      0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0};
 
   unsigned iters;		/* Unsigned because can be huge for enum */
-  double tot_iter;		/* Double because can be huge for enum */
-  double chngd, tot_changed;	/* Double because can be fraction if lratio==1*/
-  double error_prob;
+  double chngd;	/* Double because can be fraction if lratio==1*/
 
-  int tot_valid;
-  int valid;
+  int valid, block_no;
 
   int i, j;
-
-  /* Look at initial flag arguments. */
-
-  table = 0;
-
-  /* Look at arguments up to the decoding method specification. */
-
-  error_prob = 0.02;
-  max_iter = 250;
 
   /* Read parity check file. */
 
@@ -79,23 +65,15 @@ int main
   M = mod2sparse_rows(H);
   N = mod2sparse_cols(H);
 
-  /* Do the setup for the decoding method. */
-
-  prprp_decode_setup();
-
   /* Read received blocks, decode, and write decoded blocks. */
-
-  tot_iter = 0;
-  tot_valid = 0;
-  tot_changed = 0;
 
   for (block_no = 0; block_no < 1; block_no++)
   {
     /* Find likelihood ratio for each bit. */
 
     for (i = 0; i<N; i++)
-    { lratio[i] = bsc_data[i]==1 ? (1-error_prob) / error_prob
-                                  : error_prob / (1-error_prob);
+    { lratio[i] = bsc_data[i]==1 ? (1-ERROR_PROB) / ERROR_PROB
+                                  : ERROR_PROB / (1-ERROR_PROB);
     }
 
     /* Try to decode using the specified method. */
@@ -107,10 +85,6 @@ int main
     valid = check(H,dblk,pchk)==0;
 
     chngd = changed(lratio,dblk,N);
-
-    tot_iter += iters;
-    tot_valid += valid;
-    tot_changed += chngd;
 
     /* Write decoded block. */
 
@@ -127,9 +101,8 @@ int main
   /* Finish up. */
 
   fprintf(stderr,
-  "Decoded %d blocks, %d valid.  Average %.1f iterations, %.0f%% bit changes\n",
-   block_no, tot_valid, (double)tot_iter/block_no, 
-   100.0*(double)tot_changed/(N*block_no));
+  "Decoded %d blocks, %d valid.  Average %d iterations, %f bit changes\n",
+   block_no, valid, iters, chngd);
 
-  exit(0);
+  return 0;
 }

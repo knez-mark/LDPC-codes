@@ -33,8 +33,7 @@ LINK =    cc          # Command to link a program
 progs:	modules
 	$(COMPILE) decode.c
 	$(LINK) decode.o mod2sparse.o \
-	   check.o \
-	   dec.o -lm -o decode
+	   check.o dec.o -lm -o decode
 
 
 # MAKE THE MODULES USED BY THE PROGRAMS.
