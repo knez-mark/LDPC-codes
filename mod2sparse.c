@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "intio.h"
 #include "mod2sparse.h"
 
 
@@ -250,49 +249,6 @@ void mod2sparse_print
     fprintf(f,"\n");
   }
 }
-
-
-/* WRITE A SPARSE MOD2 MATRIX TO A FILE IN MACHINE-READABLE FORM. */
-
-int mod2sparse_write
-( FILE *f,
-  mod2sparse *m
-)
-{
-  mod2entry *e;
-  int i;
-
-  intio_write(f,m->n_rows);
-  if (ferror(f)) return 0;
-
-  intio_write(f,m->n_cols);
-  if (ferror(f)) return 0;
-
-  for (i = 0; i<mod2sparse_rows(m); i++)
-  { 
-    e = mod2sparse_first_in_row(m,i);
-
-    if (!mod2sparse_at_end(e))
-    {
-      intio_write (f, -(i+1));
-      if (ferror(f)) return 0;
-
-      while (!mod2sparse_at_end(e))
-      { 
-        intio_write (f, mod2sparse_col(e)+1);
-        if (ferror(f)) return 0;
-
-        e = mod2sparse_next_in_row(e);
-      }
-    }
-  }
-
-  intio_write(f,0);
-  if (ferror(f)) return 0;
-
-  return 1;
-}
-
 
 /* READ A SPARSE MOD2 MATRIX STORED IN MACHINE-READABLE FORM FROM A FILE. */
 

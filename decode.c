@@ -18,7 +18,6 @@
 #include <string.h>
 #include <math.h>
 
-#include "open.h"
 #include "mod2sparse.h"
 #include "check.h"
 #include "dec.h"

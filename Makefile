@@ -34,17 +34,14 @@ progs:	modules
 	$(COMPILE) decode.c
 	$(LINK) decode.o mod2sparse.o \
 	   check.o \
-	   intio.o dec.o open.o -lm -o decode
+	   dec.o -lm -o decode
 
 
 # MAKE THE MODULES USED BY THE PROGRAMS.
 
 modules:
 	$(COMPILE) dec.c
-	$(COMPILE) intio.c
-	$(COMPILE) blockio.c
 	$(COMPILE) check.c
-	$(COMPILE) open.c
 	$(COMPILE) mod2sparse.c
 
 
