@@ -21,11 +21,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "alloc.h"
 #include "mod2sparse.h"
-#include "mod2dense.h"
-#include "mod2convert.h"
-#include "rand.h"
 #include "check.h"
 #include "dec.h"
 
@@ -89,13 +85,6 @@ unsigned prprp_decode
   for (n = 0; ; n++)
   { 
     c = check(H,dblk,pchk);
-
-    if (table==2)
-    { printf("%7d %5d %8.1f %6d %+9.2f %8.1f %+9.2f  %7.1f\n",
-       block_no, n, changed(lratio,dblk,N), c, loglikelihood(lratio,dblk,N), 
-       expected_parity_errors(H,bprb), expected_loglikelihood(lratio,bprb,N),
-       entropy(bprb,N));
-    }
    
     if (n==max_iter || n==-max_iter || (max_iter>0 && c==0))
     { break; 

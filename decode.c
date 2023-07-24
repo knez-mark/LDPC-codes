@@ -20,7 +20,6 @@
 
 #include "open.h"
 #include "mod2sparse.h"
-#include "mod2dense.h"
 #include "check.h"
 #include "dec.h"
 
@@ -63,7 +62,7 @@ int main
   int tot_valid;
   int valid;
 
-  int i, j, k;
+  int i, j;
 
   /* Look at initial flag arguments. */
 
@@ -72,11 +71,6 @@ int main
   /* Look at arguments up to the decoding method specification. */
 
   error_prob = 0.02;
-
-  /* Look at the specification of the decoding method, which starts at meth and
-     continues to the end of the command line (marked by a zero pointer). */
-
-  dec_method = Prprp;
   max_iter = 250;
 
   /* Read parity check file. */

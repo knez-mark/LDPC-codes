@@ -16,10 +16,3 @@
 int check (mod2sparse *, char *, char *);
 
 double changed (double *, char *, int);
-
-double expected_parity_errors (mod2sparse *, double *);
-
-double loglikelihood (double *, char *, int);
-double expected_loglikelihood (double *, double *, int);
-
-double entropy (double *, int);

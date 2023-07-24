@@ -32,39 +32,20 @@ LINK =    cc          # Command to link a program
 
 progs:	modules
 	$(COMPILE) decode.c
-	$(LINK) decode.o mod2sparse.o mod2dense.o \
+	$(LINK) decode.o mod2sparse.o \
 	   check.o \
-	   alloc.o intio.o dec.o open.o -lm -o decode
-
-
-# MAKE THE TEST PROGRAMS.  First makes the modules used.
-
-tests:	modules
-	$(COMPILE) mod2dense-test.c
-	$(LINK) mod2dense-test.o mod2dense.o alloc.o intio.o \
-	  -lm -o mod2dense-test
-	$(COMPILE) mod2sparse-test.c
-	$(LINK) mod2sparse-test.o mod2sparse.o alloc.o intio.o \
-	  -lm -o mod2sparse-test
-	$(COMPILE) mod2convert-test.c
-	$(LINK) mod2convert-test.o mod2convert.o mod2dense.o mod2sparse.o \
-	  alloc.o intio.o rand.o open.o -lm -o mod2convert-test
-	$(COMPILE) rand-test.c
-	$(LINK) rand-test.o rand.o -lm -o rand-test
+	   intio.o dec.o open.o -lm -o decode
 
 
 # MAKE THE MODULES USED BY THE PROGRAMS.
 
 modules:
 	$(COMPILE) dec.c
-	$(COMPILE) alloc.c
 	$(COMPILE) intio.c
 	$(COMPILE) blockio.c
 	$(COMPILE) check.c
 	$(COMPILE) open.c
-	$(COMPILE) mod2dense.c
 	$(COMPILE) mod2sparse.c
-	$(COMPILE) -DRAND_FILE=\"`pwd`/randfile\" rand.c
 
 
 # CLEAN UP ALL PROGRAMS AND REMOVE ALL FILES PRODUCED BY TESTS AND EXAMPLES.
